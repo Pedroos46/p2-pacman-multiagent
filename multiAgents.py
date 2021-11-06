@@ -74,6 +74,34 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
+
+        """
+        Note: Remember that newFood has the function asList()
+        Note: As features, try the reciprocal of important values (such as distance to food) 
+                rather than just the values themselves.
+                
+        Estrategia: fugir del fantasma!
+        Estrategia mirar sempre on esta el menjar mes aprop perque el tio es pasa la vida donan tomps si nomes escapa.  
+        Estategia: menjar quan el fantasma fuig????
+
+        """
+        print (newGhostStates)
+        print (newFood)
+
+        """scape from ghost"""
+        nearfood = 0;
+        for fantasma in successorGameState.getGhostPositions():
+            if (manhattanDistance(newPos, fantasma) < 3):
+                return float(-999999)
+
+        for food in newFood.asList():
+            nearfood = min(nearfood, manhattanDistance(newPos, food))
+
+        ##com retorno aixo?
+
+        if(newScaredTimes): ##COM detecto si esta asustat???
+
+
         return successorGameState.getScore()
 
 def scoreEvaluationFunction(currentGameState):
