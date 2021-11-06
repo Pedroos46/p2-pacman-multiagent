@@ -10,6 +10,10 @@
 .idea/**/dictionaries
 .idea/**/shelf
 
+#COSES DEL PACMAN
+.idea/**
+
+
 # Generated files
 .idea/**/contentModel.xml
 
