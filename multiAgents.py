@@ -283,7 +283,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         maxim = float(-9999999)
 
         for agentState in gameState.getLegalActions(0):
-            optim = self.minimax(1, 0, gameState.generateSuccessor(0, agentState))
+            optim = self.expectimax(1, 0, gameState.generateSuccessor(0, agentState))
 
             """ maximitzation """
             if optim > maxim:
@@ -292,7 +292,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
         return action
 
-    def minimax(self, agentIndex, depth, gameState):
+    def expectimax(self, agentIndex, depth, gameState):
         """First: getting number of ghosts + pacman"""
         nAgents = gameState.getNumAgents()
 
@@ -303,8 +303,9 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         if agentIndex == 0:  # maximize for pacman. Iteration like we saw in the seminar class.
             v = -99999
             for nextS in gameState.getLegalActions(agentIndex):
-                v = max(self.minimax(1, depth, gameState.generateSuccessor(agentIndex, nextS)), v)
+                v = max(self.expectimax(1, depth, gameState.generateSuccessor(agentIndex, nextS)), v)
             return v
+
 
         if agentIndex != 0:  # minimize for ghosts.
 
@@ -313,14 +314,13 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                 depth = depth + 1
                 agentSwitch = 0
 
-            v = 99999
+            v = 0
             for nextS in gameState.getLegalActions(agentIndex):
-                v = min(self.minimax(agentSwitch, depth, gameState.generateSuccessor(agentIndex, nextS)), v)
+                v += self.expectimax(agentSwitch, depth, gameState.generateSuccessor(agentIndex, nextS))/ float(len(gameState.getLegalActions(agentIndex)))
             return v
 
         util.raiseNotDefined()
 
-        util.raiseNotDefined()
 
 def betterEvaluationFunction(currentGameState):
     """
@@ -330,7 +330,22 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Useful information you can extract from a GameState (pacman.py)
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+
+
+    """scape from ghost"""
+    nearfood = 9999999
+    for fantasma in currentGameState.getGhostPositions():
+        distance = manhattanDistance(newPos, fantasma)
+        if (distance < 2):
+            return distance
+    """Get the closets food"""
+    for food in newFood.asList():
+        nearfood = min(nearfood, manhattanDistance(newPos, food))
+
+    return currentGameState.getScore() + 1 / float(nearfood)
 
 # Abbreviation
 better = betterEvaluationFunction
