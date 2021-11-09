@@ -175,14 +175,14 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """First: getting number of ghosts + pacman"""
         nAgents = gameState.getNumAgents()
 
-        """COMENT"""
+        """COMENTAR"""
         if gameState.isLose() or gameState.isWin() or depth == self.depth:
             return self.evaluationFunction(gameState)
 
         if agentIndex == 0:  # maximize for pacman. Iteration like we saw in the seminar class.
             v = -99999
-            for newState in gameState.getLegalActions(agentIndex):
-                v = max(self.minimax(1, depth, gameState.generateSuccessor(agentIndex, newState)), v)
+            for nextS in gameState.getLegalActions(agentIndex):
+                v = max(self.minimax(1, depth, gameState.generateSuccessor(agentIndex, nextS)), v)
             return v
 
         if agentIndex != 0:  # minimize for ghosts.
@@ -193,11 +193,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 agentSwitch = 0
 
             v = 99999
-            for newState in gameState.getLegalActions(agentIndex):
-                v = min(self.minimax(agentSwitch, depth, gameState.generateSuccessor(agentIndex, newState)), v)
+            for nextS in gameState.getLegalActions(agentIndex):
+                v = min(self.minimax(agentSwitch, depth, gameState.generateSuccessor(agentIndex, nextS)), v)
             return v
 
-    #util.raiseNotDefined()
+        util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -209,6 +209,60 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
+
+        print(gameState)
+        action = None
+        maxim = float(-9999999)
+        alpha = float(-9999999)
+        beta = float(9999999)
+
+        for agentState in gameState.getLegalActions(0):
+            optim = self.alphabeta(1, 0, gameState.generateSuccessor(0, agentState), alpha, beta)
+
+            """ maximitzation """
+            if optim > maxim:
+                maxim = optim
+                action = agentState
+
+            if maxim > beta:
+                return maxim
+            alpha = max(alpha, maxim)
+
+        return action
+
+
+    def alphabeta(self, agentIndex, depth, gameState, alpha, beta):
+        """First: getting number of ghosts + pacman"""
+        nAgents = gameState.getNumAgents()
+
+        """COMENTAR"""
+        if gameState.isLose() or gameState.isWin() or depth == self.depth:
+            return self.evaluationFunction(gameState)
+
+        if agentIndex == 0:  # maximize for pacman.
+            v = -999999
+            for nextS in gameState.getLegalActions(agentIndex):
+                v = max(self.alphabeta(1, depth, gameState.generateSuccessor(agentIndex, nextS), alpha, beta), v)
+                if v > beta:
+                    return v
+                alpha = max(alpha, v)
+            return v
+
+        if agentIndex != 0:  # minimize for ghosts.
+
+            agentSwitch = agentIndex + 1
+            if nAgents == agentSwitch:
+                depth = depth + 1
+                agentSwitch = 0
+
+            v = 999999
+            for nextS in gameState.getLegalActions(agentIndex):
+                v = min(self.alphabeta(agentSwitch, depth, gameState.generateSuccessor(agentIndex, nextS), alpha, beta), v)
+                if v < alpha:
+                    return v
+                beta = min(beta, v)
+            return v
+
         util.raiseNotDefined()
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
@@ -224,6 +278,48 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
+        print(gameState)
+        action = None
+        maxim = float(-9999999)
+
+        for agentState in gameState.getLegalActions(0):
+            optim = self.minimax(1, 0, gameState.generateSuccessor(0, agentState))
+
+            """ maximitzation """
+            if optim > maxim:
+                maxim = optim
+                action = agentState
+
+        return action
+
+    def minimax(self, agentIndex, depth, gameState):
+        """First: getting number of ghosts + pacman"""
+        nAgents = gameState.getNumAgents()
+
+        """COMENTAR"""
+        if gameState.isLose() or gameState.isWin() or depth == self.depth:
+            return self.evaluationFunction(gameState)
+
+        if agentIndex == 0:  # maximize for pacman. Iteration like we saw in the seminar class.
+            v = -99999
+            for nextS in gameState.getLegalActions(agentIndex):
+                v = max(self.minimax(1, depth, gameState.generateSuccessor(agentIndex, nextS)), v)
+            return v
+
+        if agentIndex != 0:  # minimize for ghosts.
+
+            agentSwitch = agentIndex + 1
+            if nAgents == agentSwitch:
+                depth = depth + 1
+                agentSwitch = 0
+
+            v = 99999
+            for nextS in gameState.getLegalActions(agentIndex):
+                v = min(self.minimax(agentSwitch, depth, gameState.generateSuccessor(agentIndex, nextS)), v)
+            return v
+
+        util.raiseNotDefined()
+
         util.raiseNotDefined()
 
 def betterEvaluationFunction(currentGameState):
